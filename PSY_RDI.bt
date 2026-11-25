@@ -1,0 +1,59 @@
+//------------------------------------------------
+//--- 010 Editor v15.1 Binary Template
+//
+//      File: PSY_RDI.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Pygnosis *.RDI
+//  Category: Game
+// File Mask: *.RDI
+//  ID Bytes: 52 44 49 32 20 20 20 00
+//   History: 
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+typedef struct {
+    char magic[8];                  // 52 44 49 32 20 20 20 00 | "RDI2   \x00"
+    int32 numberOfAssets;
+    int32 numberOfObjects;
+} RDIHeader <style=sSection1>;
+
+
+typedef struct {
+    int32 unk <comment=Str("0x%X", this / 16)>;
+    int32 assetType;
+    char assetExtension[3];
+    char space;                 // 0x20
+    char assetName[nameSize];
+    if (assetName[0] == 0x00)
+{
+    Printf("%d %s\n", assetType, assetExtension);
+}
+} AssetInfo <style=sSection2>;
+
+typedef struct {
+    int32 unk <comment=Str("0x%X", this / 16)>;;
+    int32 objectType;
+    char objectName[nameSize];    
+} ObjectInfo <style=sSection3>;
+
+//------------------------------------------------
+
+local byte b <hidden=true>;
+local int i <hidden=true>;
+local int nameSize <hidden=true>;
+
+RDIHeader header;
+
+while (true) {
+    b = ReadByte();
+    if (b == 0x01 || FEof()) { break; }
+    else { FSkip(1); }
+}
+i = FTell() - sizeof(RDIHeader);
+FSkip(-i);
+if (i == 53) { nameSize = 37; } // G-Police, Shipwreckers, Assault Rigs
+if (i == 56) { nameSize = 40; } // Tellurian Defence
+
+AssetInfo assetInfo[header.numberOfAssets] <optimize=false>;
+ObjectInfo objectInfo[header.numberOfObjects] <optimize=false>;

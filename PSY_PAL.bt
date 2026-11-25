@@ -1,0 +1,38 @@
+//------------------------------------------------
+//--- 010 Editor v15.1 Binary Template
+//
+//      File: PSY_PAL.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis PAL Data
+//  Category: Game
+// File Mask: *.PAL
+//  ID Bytes: 01 00
+//   History:
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+typedef struct {
+    byte Red <fgcolor=cRed>;
+    byte Green <fgcolor=cGreen>;
+    byte Blue <fgcolor=cBlue>;
+} RGBTriplet <style=sSection3>;
+
+typedef struct {
+    int16 magic;                // 01 00
+    local uint8 sizeCheck <hidden = true>;
+    sizeCheck = ReadByte();
+    if (sizeCheck <= 0) { 
+        int16 numColours;
+        RGBTriplet RGB[numColours];
+    }
+    else { 
+        uint8 numColours;
+        uint8 unknown;
+        RGBTriplet RGB[numColours]; 
+        }
+} PALData <style=sSection4>;
+
+//byte rdheader[20]<style=sData>;
+//PALData PAL;
+//RGBTriplet RGB[(FileSize()-sizeof(PAL_Header)) / 3];

@@ -1,0 +1,261 @@
+
+//------------------------------------------------
+//--- 010 Editor v16.0.2 Binary Template
+//
+//      File: PSY_RDT.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis RDT Game Data
+//  Category: Game
+// File Mask: *.RDT
+//  ID Bytes:
+//   History:
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+#include "PSY_BMP.bt"
+#include "PSY_FEB.bt"
+#include "PSY_MOT.bt"
+#include "PSY_PAL.bt"
+#include "PSY_RDA2.bt"
+#include "PSY_RIFF.bt"
+#include "PSY_SFXSTR.bt"
+#include "PSY_SKL.bt"
+#include "PSY_TEX.bt"
+#include "PSY_VAG.bt"
+
+typedef struct {
+    int16 id;
+    int16 valueOffset <format=hex>;
+} TagEntry <read=Str("ID: %d -> Offset: 0x%X", id, valueOffset)>;
+
+typedef struct {
+    int32 index<comment=Str("0x%X", this)>;    // Offset of the asset with an index appended. The index value is the first byte found in the .RDT file.
+    int32 assetSize;                           // Asset size in bytes (excluding header).
+    byte padding[6];                           // 00 00 00 00 00 00
+    int16 assetType;                           // ID which corresponds to a file type (can be found in *.RDI files).
+    int32 tagCount;                         //
+    if (tagCount > 0) { TagEntry t[tagCount] <comment=Str("0x%X", this)>; }
+
+    switch(assetType) {
+        case 0:                                         // Blank. Should never occur.
+            byte BLANK_DATA[assetSize]<bgcolor=cDkRed>;
+            Printf("WARNING: BLANK DATA");
+            break;
+        case 1:                                         // RDA (All)
+            RDA2Data RDA2; break;
+        case 2:                                         // STB (All)
+            byte STB[assetSize]; break;
+        case 4:                                         // DAT (Assault Rigs, Assault Rigs Demo DOS), SKN (Tellurian Defence)
+            byte DAT[assetSize];
+            // TODO: Detect which it is depending on the game file being read
+            //byte DAT[assetSize];
+            //byte SKN[assetSize];
+            break;
+        case 5:                                         // VAG (G-Police, G-Police Demo PC)
+            byte VAG[assetSize]; break;
+        case 6:                                         // REC (Assault Rigs, Assault Rigs Demo DOS)
+            byte REC[assetSize]; break;
+            break;
+        case 7:                                         // WAV (G-Police, G-Police Demo PC)
+            local char signature[4] <hidden = true>;
+            ReadBytes(signature, FTell(), 4);
+            switch(signature) {
+                case "RIFF":                            // 52 49 46 46 | "RIFF"
+                RIFFAudioData WAV; break;
+                case "SFXS":                            // 53 46 58 53 | "SFXS"
+                SFXSTRData SFXSTR; break;
+                default:                                // Unknown
+                byte RIFF_AUDIO[assetSize]; break;
+            } break;
+        case 11:                                        // WAI (G-Police, G-Police Demo PC)
+            RIFFAudioData WAV; break;
+        case 12:                                        // SHP (Tellurian Defence)
+            byte SHP[assetSize]; break;        
+        case 15:                                        // VAG (G-Poilce PSX)
+            BigEndian();
+            VAGAudio VAGHeader;
+            LittleEndian();
+            byte VAGData[assetSize - sizeof(VAGHeader)];
+            break;
+        case 18:                                        // TEX (Tellurian Defence)
+            TEXData TEX; break;
+        case 21:                                        // PAL (Tellurian Defence)
+            PALData PAL; break;
+        case 22:                                        // BMP (Tellurian Defence)
+            BMPData BMP_Header;
+            byte BMP_Data[assetSize-sizeof(BMP_Header)];
+            break;
+        case 30:                                        // IMG (Assault Rigs DOS)
+            byte IMG[assetSize]; break;
+        case 31:                                        // SHP (Assault Rigs Demo DOS)
+            byte SHP[assetSize]; break;
+        case 34:                                        // TEX (Assault Rigs Demo DOS)
+            TEXData TEX; break;
+        case 35:                                        // VAG (Assault Rigs DOS)
+            byte VAGData[assetSize]; break;
+        case 37:                                        // PAL (Assault Rigs Demo DOS)
+            PALData PAL; break;
+        case 38:                                        // BMP (Assault Rigs Demo DOS)
+            BMPData BMP_Header;
+            byte BMP_Data[assetSize-sizeof(BMP_Header)];
+            break;
+        case 43:                                        // SKN (Assault Rigs Demo DOS)
+            byte SKN[assetSize]; break;
+        case 44:                                        // SKL (Tellurian Defence)
+            SKLData SKL[assetSize]; break;
+        case 64:                                        // UNK (Shipwreckers/Overboard PC)
+            byte UNK_SW_DATA[assetSize]; break;
+        case 77:                                        // UNK (Shipwreckers/Overboard PC)
+            byte UNK_SW_DATA[assetSize]; break;
+        case 66:                                        // WAV (Shipwreckers/Overboard PC)
+            //RIFFAudioData WAV; break;
+            byte UNK_SW_DATA[assetSize]; break;
+        case 84:                                        // UNK (Shipwreckers/Overboard PC)
+            byte UNK_SW_DATA[assetSize]; break;
+        case 108:                                       // SKL (Assault Rigs Demo DOS)
+            SKLData SKL[assetSize]; break;
+        case 119:                                       // FXH (Assault Rigs DOS)
+            byte FXH[assetSize]; break;
+        case 121:                                       // FXD (Assault Rigs DOS)
+            byte FXD[assetSize]; break;            
+        case 131:                                       // COL (Assault Rigs DOS)
+            byte COL[assetSize]; break;
+        case 139:                                       // BMP (Assault Rigs DOS)
+            BMPData BMP_Header;
+            byte BMP_Data[assetSize-sizeof(BMP_Header)];
+            break;
+        case 141:                                       // PAL (Assault Rigs DOS)
+            PALData PAL; break;
+        case 143:                                       // TEX (Assault Rigs DOS)
+            TEXData TEX; break;
+        case 145:                                       // SHP (Assault Rigs DOS)
+            byte SHP[assetSize]; break;
+        case 200:                                      // BMP G-Police Demo (PC)
+            BMPData BMP_Header;
+            byte BMP_Data[assetSize-sizeof(BMP_Header)];
+            break;
+        case 202:                                      // PAL G-Police Demo (PC)
+            PALData PAL;
+            break;
+        case 204:                                      // TEX G-Police Demo (PC)
+            TEXData TEX; break;
+        case 209:                                      // IMG G-Police Demo (PC)
+            byte IMG[assetSize]; break;
+        case 225:                                      // SKL (Assault Rigs DOS)
+            SKLData SKL[assetSize]; break;
+        case 229:                                      // SKN (Assault Rigs DOS)
+            byte SKN[assetSize]; break;
+        case 426:                                      // SPH (Tellurian Defence)
+            byte SPH[assetSize]; break;
+        case 690:                                      // IMG (Assault Rigs Demo DOS)
+            byte IMG[assetSize]; break;
+        case 824:                                      // SHP G-Police Demo (PC)
+            byte SHP[assetSize]; break;
+        case 947:                                      // COL, G-Police Demo (PC)
+            byte COL[assetSize]; break;
+        case 961:                                      // FEB, G-Police Demo (PC)
+            byte FEB[assetSize]; break;
+        case 1010:                                     // MOT, G-Police Demo (PC)
+            MOTData MOT; break;
+        case 1119:                                     // VAG (Assault Rigs Demo DOS)
+            byte VAGData[assetSize]; //VagAudio - check if valid
+            break;
+        case 1202:                                      // FXH (Assault Rigs Demo DOS)
+            byte FXH[assetSize]; break;
+        case 1204:                                      // FXD (Assault Rigs Demo DOS)
+            byte FXD[assetSize]; break;            
+        case 1211:                                         // VAG (G-Police 2 PSX)
+            byte VAG[assetSize]; break;
+        case 1214:                                      // COL (Assault Rigs DOS)
+            byte COL[assetSize]; break;
+        case 1414:                                      // BMP (G-Police PC)
+            BMPData BMP_Header;
+            byte BMP_Data[assetSize-sizeof(BMP_Header)];
+            break;
+        case 1416:                                      // PAL (G-Police PC)
+            PALData PAL; break;
+        case 1418:                                      // TEX (G-Police PC)
+            TEXData TEX; break;
+        case 1423:                                      // IMG (G-Police PC)
+            byte IMG[assetSize]; break;
+        case 1579:                                      // SKN (G-Police Demo PC)
+            byte SKN[assetSize]; break;
+        case 1580:                                      // SKL (G-Police Demo PC)
+            SKLData SKL[assetSize]; break;
+        case 1657:                                      // ATX (G-Police Demo PC)
+            byte ATX[assetSize]; break;
+        case 1758:                                      // MOB (G-Police Demo PC)
+            byte MOB[assetSize]; break;
+        case 2048:                                      // SHP (G-Police PC)
+            byte SHP[assetSize]; break;
+        case 2154:                                      // ATX (G-Police PC)
+            byte ATX[assetSize]; break;
+        case 2389:                                      // ARN (Assault Rigs DOS)
+            byte ARN[assetSize]; break;
+        case 2503:                                      // GOB (Assault Rigs DOS)
+            byte GOB[assetSize]; break;       
+        case 2718:                                      // GRD (G-Police Demo PC)
+            byte GRD[assetSize]; break;
+        case 2808:                                      // NAV (Assault Rigs DOS)
+            byte NAV[assetSize]; break;
+        case 3407:                                      // ARN (Assault Rigs Demo DOS)
+            byte ARN[assetSize]; break;
+        case 3692:                                      // GOB (Assault Rigs Demo DOS)
+            byte GOB[assetSize]; break;  
+        case 4049:                                      // NAV (Assault Rigs Demo DOS)
+            byte NAV[assetSize]; break;
+        case 6386:                                      // SKL (G-Police PC)
+            SKLData SKL[assetSize]; break;
+        case 6388:                                      // SKN (G-Police PC)
+            byte SKN[assetSize]; break;
+        case 6937:                                      // COL (G-Police PC)
+            byte COL[assetSize]; break;
+        case 6944:                                      // FEB (G-Police PC)
+            byte FEB[assetSize]; break;
+        case 6949:                                      // MOT (G-Police PC)
+            MOTData MOT; break;
+        case 7549:                                      // MOB (G-Police PC)
+            byte MOB[assetSize]; break;
+        case 7863:                                      // GRD (G-Police PC)
+            byte GRD[assetSize]; break;
+        case 10016:                                     // ANI (Tellurian Defence)
+            byte ANI[assetSize]; break;
+        case 10046:                                     // ALL (Tellurian Defence)
+            byte ALL[assetSize]; break;
+        case 10048:                                     // SWR (Tellurian Defence)
+            byte SWR[assetSize]; break;
+        case 10068:                                     // LOD (Tellurian Defence)
+            byte LOD[assetSize]; break;
+        case 10300:                                     // BBX (Tellurian Defence)
+            byte BBX[assetSize]; break;
+        case 10302:                                     // SWP (Tellurian Defence)
+            byte SWP[assetSize]; break;
+        case 11442:                                     // REC (G-Police PC)
+            byte REC[assetSize]; break;
+        default:                                        // Anything Unknown
+            byte UNKNOWN_DATA[assetSize]; break;
+    }
+} ASSET <style=sSection1, comment=Str("%d", assetType)>;
+
+//------------------------------------------------
+
+Printf("File:  %s\n", GetFileName());
+Printf("Size:  %d bytes\n", FileSize());
+Printf("CRC32: 0x%X\n", Checksum(CHECKSUM_CRC32, 0, 0, -1, -1));
+
+while (!FEof()) {
+    switch (ReadByte()) {
+        case 0x00:
+            byte EMPTY <bgcolor=cSilver, hidden=true>;
+            break;
+        case 0x55:
+            byte UNKNOWN <bgcolor=cDkRed, hidden=true>;
+            break;
+        default:
+            ASSET Asset;
+            break;
+        }
+}
+
+Printf("Template execution complete.");

@@ -1,0 +1,26 @@
+//------------------------------------------------
+//--- 010 Editor v15.0 Binary Template
+//
+//      File: PSY_TEX.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis TEX Data
+//  Category: Game
+// File Mask: *.TEX
+//  ID Bytes: FF FF FF
+//   History:
+//   1.0   0000-00-00 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+typedef struct {
+int32 magic;
+int32 numColours;
+int32 PALIndex;
+int32 BMPIndex;
+int32 zero;
+int32 anotherZero;
+int32 sixteen;
+int32 twenty;
+} TEXData <style=sSection4>;
+
+//TEXData TEX_File;

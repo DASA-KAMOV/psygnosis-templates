@@ -1,0 +1,73 @@
+//------------------------------------------------
+//--- 010 Editor v15.0 Binary Template
+//
+//      File: PSY_RIFF
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis RIFF Audio Data
+//  Category: Game
+// File Mask: *.WAV
+//  ID Bytes: 52 49 46 46 | "RIFF"
+//   History: 
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+// Not too different from standard RIFF Audio.
+// This template keeps it as simple as needed to
+// read Psygnosis RIFF Audio without uneccessary
+// extras needed for a full RIFF implementation.
+//------------------------------------------------
+
+typedef struct {
+    char magic[4];              // 73 6D 70 6C | "smpl" | Sampler data tag
+    int32 smplSectionSize;
+    byte smplData[smplSectionSize];
+} SMPL <style=sSection4>;
+
+ // infoType is a 4 char code:
+ // 49 53 46 54 | "ISFT" | Software
+ // 49 43 52 44 | "ICRD" | Creation Date
+ // 49 45 4E 47 | "IENG" | Engineer
+typedef struct {
+    char infoType[4];    
+    int32 infoLength;
+    char infoString[infoLength];
+    if (ReadByte() == 0x00) { char padding; }
+} INFODATA <style=sSection4>;
+
+typedef struct {
+    char LIST[4];               // 4C 49 53 54 | "LIST"
+    int32 listSectionLength;
+    char INFO[4];               // 49 4E 46 4F | "INFO"
+    local int i = sizeof(INFO);
+    while (i < listSectionLength) {
+        INFODATA infoData;
+        i += sizeof(infoData);
+    }
+} LIST <style=sSection4>;
+
+typedef struct {
+    char riffChunkID[4];                // 52 49 46 46 | "RIFF"
+    int32 riffchunkSize;                // 36 + riffSubChunk2Size, or 4 + (8 + riffSubChunk1Size) + (8 + riffSubChunk2Size). This is the size of the rest of the chunk following this number, the size of the entire file in bytes -8 bytes for the two fields not included in this count.
+    char format[4];                     // 57 41 54 45 | "WAVE"
+    char riffsubChunk1ID[4];            // 66 6D 74 20 | "fmt "
+    int32 riffsubChunk1Size;            // Length of format
+    int16 audioFormat;                  // Format Type (1 = PCM, anything else indicates compression).
+    int16 numChannels;                  // Number of channels. 1 = Mono, 2 = Stereo, etc
+    int32 sampleRate;                   // Samples/Second in Hz
+    int32 byteRate;                     // (Sample Rate * BitsPerSample * numChannels) / 8
+    int16 blockAlign;                   // (BitsPerSample * Channels) / 8
+    int16 bitsPerSample;                // Bits Per Sample
+    char riffsubChunk2ID[4];            // 64 61 74 61 | "data" | Marks Beginning of data section
+    int32 riffsubChunk2Size;            // Size of data block in bytes. NumSamples * NumChannels * BitsPerSample/8
+    byte samples[riffsubChunk2Size];    // Data block
+    local char metaCheck[4] <hidden = true>;
+    ReadBytes(metaCheck, FTell(), 4);
+    if (metaCheck == "smpl") {
+        SMPL smpl_metadata;
+    }
+    if (metaCheck == "LIST") {
+        LIST list_metadata;
+    }
+} RIFFAudioData <style=sSection3>;
+
+//RIFFAudioData RIFF_Data;

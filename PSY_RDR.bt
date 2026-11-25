@@ -1,0 +1,29 @@
+//------------------------------------------------
+//--- 010 Editor v15.1 Binary Template
+//
+//      File: PSY_RDR.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis RDR Data
+//  Category: Game
+// File Mask: *.RDR
+//  ID Bytes: 52 44 52 32 20 20 20 00 | "RDR2   \0x00"
+//   History: 
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+// G-Police RDR files support 31 entries, 64 bytes each.
+// Total File size including header should therefore not exceed 2000 bytes.
+// Not sure about other games yet.
+
+typedef struct {
+        char magic[8] <style=sSection1>;
+        int32 numberOfEntries <style=sSection2>;
+    } RDRHeader;
+    
+typedef struct {
+    char FileName[64] <style=sSection3>;
+    } FileInfo;
+
+RDRHeader RDR_Header;
+FileInfo File_Info[RDR_Header.numberOfEntries];

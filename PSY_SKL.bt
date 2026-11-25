@@ -1,0 +1,21 @@
+//------------------------------------------------
+//--- 010 Editor v15.0 Binary Template
+//
+//      File: PSY_SKL.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis SKL Data
+//  Category: Game
+// File Mask: *.SKL
+//  ID Bytes:
+//   History:
+//   1.0   0000-00-00 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+// 58 58 00 40
+
+typedef struct {
+        byte unknown;
+    } SKLData <style=sSection4>;
+
+//while (!FEof()) { SKLData Entry; }

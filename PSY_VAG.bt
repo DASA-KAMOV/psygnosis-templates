@@ -1,0 +1,29 @@
+//------------------------------------------------
+//--- 010 Editor v15.1 Binary Template
+//
+//      File: PSY_VAG.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for PSX VAG Audio Format
+//  Category: Game
+// File Mask: *.VAG
+//  ID Bytes: 56 41 47 70
+//   History:
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+// All Big-Endian
+// Stripped down for use in interpreting Psygnosis
+// PSX audio, not necessarily a full implementation 
+// for all variants of VAG files.
+//------------------------------------------------
+
+typedef struct {
+    char magic[4];                  // 56 41 47 70 | "VAGp"
+    int32 version;
+    byte reserved[4];
+    int32 dataSize;                 // Data Size In Bytes
+    int32 sampleRate;               // Sample rate in Hz
+    byte reserved2[12];
+    char name[16];                  // Filename
+    //byte samples[dataSize];
+} VAGAudio <style=sSection4>;

@@ -1,0 +1,66 @@
+//------------------------------------------------
+//--- 010 Editor v15.0 Binary Template
+//
+//      File: PSY_FEB.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis FEB Data
+//  Category: Game
+// File Mask: *.FEB
+//  ID Bytes:
+//   History:
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+// !Does not work for all .FEB variants!
+
+LittleEndian();
+
+typedef struct {
+    int32 index<comment=Str("0x%X", this)>;
+    int32 assetSize;
+    byte padding[6];
+    int16 assetType;
+    int32 tagCount;
+    if (tagCount > 0) { int32 tags[tagCount] <comment=Str("0x%X", this)>; }
+} AssetHeader<style=sHeading1>;
+
+typedef struct {
+    string strEntry;
+} StringEntry <style=sSection4, read=strEntry>;
+
+typedef struct {
+    int32 versionOrMagic;
+    int32 layoutParams[4];
+    int32 unknownId;
+    int32 payloadSize;
+    int32 unknownFlag;
+} FEBHeader <style=sHeading2>;
+
+local int i<hidden=true>;
+local int position<hidden=true>;
+local int padPos<hidden=true>;
+
+typedef struct {
+    int32 numStrings <style=sSection1>;
+    int32 offsets[numStrings] <style=sSection2, format=hex>;
+
+    for (i = 0; i < numStrings; i++) {
+        position = offsets[i] + sizeof(assetHeader);
+        StringEntry str <pos=position>;
+
+        padPos = position + sizeof(str);
+        while (padPos < FileSize() && ReadByte(padPos) == 0x00) {
+            byte padding<pos=padPos, style=sData, hidden=true>;
+            padPos++;
+        }
+    }
+} Section<style=sHeading3>;
+
+// --------------------------------------------------
+
+//AssetHeader assetHeader;
+//FEBHeader febHeader;
+//Section section;
+//FSeek(sizeof(assetHeader) + febHeader.payloadSize);
+//Section section;

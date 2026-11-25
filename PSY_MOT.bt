@@ -1,0 +1,61 @@
+//------------------------------------------------
+//--- 010 Editor v14.0.1 Binary Template
+//
+//      File: PSY_MOT.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis MOT Data
+//  Category: Game
+// File Mask: *.MOT
+//  ID Bytes: 0C 00 00 00
+//   History:
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+typedef struct {
+    string c;
+    } Objectives <style=sSection2>;
+    
+    typedef struct {
+    int32 i;
+    } unknownInt <style=sSection3>;
+
+    typedef struct {
+    string t;
+    } TargetName <style=sSection4>;
+
+typedef struct {
+    local int32 baseOffset <hidden = true> = FTell();
+    local int16 i <hidden = true>;
+    local int16 MAX_OBJECTIVES <hidden = true> = 16;
+
+    int32 magic;        // 0C 00 00 00
+    int32 unknown1;     // Always 140?
+    int32 unknown2;     // Always 268?
+    
+    int32 primaryObjectiveOffsets[MAX_OBJECTIVES];    // First is always 396 (Dec).
+    int32 secondaryObjectiveOffsets[MAX_OBJECTIVES];
+    int32 primaryExtrasOffsets[MAX_OBJECTIVES];
+    int32 secondaryExtrasOffsets[MAX_OBJECTIVES];
+    int32 unknownPrimaryData[MAX_OBJECTIVES];
+    int32 unknownSecondaryData[MAX_OBJECTIVES];
+    
+    for (i = 0; i < MAX_OBJECTIVES; i++) {
+        FSeek(baseOffset + primaryObjectiveOffsets[i]);
+        Objectives Primary_Objective;
+        FSeek(baseOffset + primaryExtrasOffsets[i]);
+        TargetName Target_Name;
+        FSeek(baseOffset + unknownPrimaryData[i]);
+        unknownInt Unknown_Int;
+    }
+    for (i = 0; i < MAX_OBJECTIVES; i++) {
+        FSeek(baseOffset + secondaryObjectiveOffsets[i]);
+        Objectives Secondary_Objective;
+        FSeek(baseOffset + secondaryExtrasOffsets[i]);
+        TargetName Target_Name;
+        FSeek(baseOffset + unknownSecondaryData[i]);
+        unknownInt Unknown_Int;;
+    }
+} MOTData <style=sSection1>;
+
+//MOTData MOT_Data;

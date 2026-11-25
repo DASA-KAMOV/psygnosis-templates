@@ -1,0 +1,41 @@
+//------------------------------------------------
+//--- 010 Editor v15.2 Binary Template
+//
+//      File: PSY_RDA2.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis RDA2 Data
+//  Category: Game
+// File Mask: *.RDA2
+//  ID Bytes:
+//   History:
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+// On PC maxAssets = 20000, on PSX maxAssets = 10000
+// Some RDA files have no associated data (totalAssetSize = 0), in
+// which case maxAssets == numberOfAssets.
+
+//local int32 maxAssets <hidden = true>;
+//maxAssets = 10000;
+//maxAssets = 20000;
+//maxAssets = numberOfAssets;
+
+typedef struct {
+    char magic[8];              // 52 44 41 32 20 20 20 00 | "RDA2   \x00"
+    int32 numberOfAssets;       // Number of valid data Assets in the list of Assets
+    int32 totalAssetsSize;      // Total size of all data Assets in bytes.
+    
+    //if (numberOfAssets <= 10000) { maxAssets = 10000; }
+    //else { maxAssets = 20000; }
+    //if (totalAssetsSize == 0) { 
+    //    maxAssets = numberOfAssets; 
+    //}
+    
+    
+    int32 assetOffset[numberOfAssets] <comment=Str("%#9X", this)>;      // List of Assets
+//    int32 emptyIDs[maxAssets - numberOfAssets]<bgcolor=cDkGray>;      // Unused space in the ID list. 20000 PC, 10000 PSX
+
+} RDA2Data <style=sSection2>;
+    
+//RDA2Data RDA2_Data;

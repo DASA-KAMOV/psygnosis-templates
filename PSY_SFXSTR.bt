@@ -1,0 +1,28 @@
+//------------------------------------------------
+//--- 010 Editor v15.1 Binary Template
+//
+//      File: PSY_SFXSTR
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis SFXSTR Data
+//  Category: Game
+// File Mask: *.SFXSTR
+//  ID Bytes: 53 46 58 53 54 52
+//   History: 
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+// Stock .SFXSTR ("Special Effects Stream") files 
+// are unsigned 8-bit mono pulse-code modulation
+// (PCM) streams, 11025Hz Sample rate.
+//------------------------------------------------
+
+typedef struct {
+    char magic[8];                  // 53 46 58 53 54 52 00 00 | "SFXSTR  "
+    int32 dataSize;                 // Data portion size in bytes
+    int32 sampleRate;               // Sample rate in Hz
+    int16 numChannels;              
+    int16 bytesPerSample;           
+    byte samples[dataSize];
+} SFXSTRData <style=sSection4>;
+
+//SFXSTRData SFXSTR_Data;

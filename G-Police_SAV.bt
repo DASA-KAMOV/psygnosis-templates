@@ -1,0 +1,49 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.2 Binary Template
+//
+//      File: GPolice_SAV
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for G-Police Save Game Data File
+//  Category: Game
+// File Mask: *.sav
+//  ID Bytes: 0F 00 00 00
+//   History: 
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+
+typedef struct {
+    char bangs[2];              // Slots always begin with ##
+    byte blank;
+    int16 year;
+    byte month;
+    byte blank;
+    byte unk1;
+    byte blank;
+    byte day;
+    byte blank;
+    byte hours24h;
+    byte blank;
+    byte minutes;
+    byte blank;
+    byte unk2;
+    byte blank;
+    byte unk3;
+    byte unk4;
+    char name[12];
+    byte blank;
+    byte unk5[17];
+    byte blank;
+    byte averageHitRatio;
+    byte blank;
+    byte objectivesAchieved;
+    byte totalObjectives;
+    byte secretsUnlocked;       // Bitfield
+    byte blank;
+    int16 totalEnemyKills;
+    int16 totalCivilianKills;
+    byte levelsCompleted;
+} SaveSlot <style=sSection2, comment=Str("%s", name)>;
+    
+int32 numSlots <style=sSection1>;
+SaveSlot saveSlot[numSlots];

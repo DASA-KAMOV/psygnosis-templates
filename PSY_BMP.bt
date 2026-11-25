@@ -1,0 +1,25 @@
+//------------------------------------------------
+//--- 010 Editor v15.0 Binary Template
+//
+//      File: PSY_BMP.bt
+//   Authors: DASA-KAMOV
+//   Version: 1.0
+//   Purpose: Template for Psygnosis BMP Data
+//  Category: Game
+// File Mask: *.BMP
+//  ID Bytes: 01 00
+//   History:
+//   1.0   2026-11-25 DASA-KAMOV: Initial release.
+//------------------------------------------------
+//
+// Each Value is 2 bytes (16bits) ?
+//
+
+typedef struct {
+    int16 magic;                // 01 00
+    int16 width;
+    int16 height;
+    int16 numColours;
+    int16 unknown2;
+    int16 unknown3;
+ } BMPData <style=sSection1>;
